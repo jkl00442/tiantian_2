@@ -1,0 +1,93 @@
+{%extends 'base_user.html'%}
+{%block header%}
+<script>
+	$(function () {
+	    var $name_ok = false;
+	    var $pwd_ok = false;
+//	    用户名框失去焦点时，看其是否合法
+		$('.name_input').blur(function () {
+			var $len = $(this).val().length;
+			if($len<5||$len >20){
+			    $(this).next().html('请输入５到２０位字符').show();
+			}
+			else{
+                $(this).next().html('').hide();
+                $name_ok = true;
+			}
+        });
+//	    密码框失去焦点时，看其是否合法
+		$('.pass_input').blur(function () {
+		    var $len = $(this).val().length;
+		    if($len < 8 || $len >20){
+                $(this).next().html('密码最少8位，最长20位').show();
+			}
+			else{
+		        $(this).next().html('');
+		        $pwd_ok = true;
+			}
+        });
+//		提交时，看看输入是否合法
+        $('.form_input').submit(function () {
+			$('.name_input').blur();
+			$('.pass_input').blur();
+			if($name_ok == true && $pwd_ok == true){
+			    return true;
+			}
+			else{
+			    return false;
+			}
+        })
+
+//        根据视图中传过来的内容提示错误
+        var $name_error = $('.user_error').attr('value');
+        var $pwd_error = $('.pwd_error').attr('value');
+        if($name_error == 1){
+            $('.user_error').html('用户名错误，请重新输入').show();
+        }
+        else{
+            $('.user_error').html('').hide();
+        }
+        if($pwd_error == 1){
+            $('.pwd_error').html('密码错误，请重新输入').show();
+        }
+        else{
+            $('.pwd_error').html('').hide();
+        }
+    })
+</script>
+{%endblock header%}
+
+{%block body%}
+	<div class="login_top clearfix">
+		<a href="/" class="login_logo"><img src="/static/images/logo02.png"></a>
+	</div>
+
+	<div class="login_form_bg">
+		<div class="login_form_wrap clearfix">
+			<div class="login_banner fl"></div>
+			<div class="slogan fl">日夜兼程 · 急速送达</div>
+			<div class="login_form fr">
+				<div class="login_title clearfix">
+					<h1>用户登录</h1>
+					<a href="/user/register/">立即注册</a>
+				</div>
+				<div class="form_input">
+					<form method="post" action="/user/handle_login/">
+						{%csrf_token%}
+						<input type="text" name="user_name" class="name_input" placeholder="请输入用户名"
+                               value="{{user_name}}">
+						<div class="user_error" value="{{name_error}}">输入错误</div>
+						<input type="password" name="user_pwd" class="pass_input" placeholder="请输入密码">
+						<div class="pwd_error" value="{{pwd_error}}">输入错误</div>
+						<div class="more_input clearfix">
+							<input type="checkbox" name="check" checked="checked">
+							<label>记住用户名</label>
+							<a href="#">忘记密码</a>
+						</div>
+						<input type="submit" value="登录" class="input_submit">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{%endblock body%}

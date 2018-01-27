@@ -1,0 +1,100 @@
+{%extends 'base_user.html'%}
+
+{%block header%}
+<script>
+	$(function () {
+	    var $zip_ok = false;
+		var $phone_ok = false;
+//		四个框分别验证输入是否合法
+		var reg_zip = /^[1-9][0-9]{5}$/;
+		var reg_phone = /^1[34578]\d{9}$/;
+
+		$('.form_group').eq(2).children('input').blur(function () {
+			var $val = $(this).val();
+			if(reg_zip.test($val)){
+			    $zip_ok = true;
+			}
+			else{
+			    $zip_ok = false;
+			}
+        });
+        $('.form_group').eq(3).children('input').blur(function () {
+			var $val = $(this).val();
+			if(reg_phone.test($val)){
+			    $phone_ok = true;
+			}
+			else{
+			    $phone_ok = false;
+			}
+        });
+
+		$('#recv_form').submit(function () {
+		    if($('.form_group').eq(0).children('input').val()==''){
+		        return false;
+			}
+            else if($('.site_area').val()==''){
+                return false;
+			}
+			else{
+			    $('.form_group').eq(2).children('input').blur();
+                $('.form_group').eq(3).children('input').blur();
+                if($zip_ok == true && $phone_ok == true){
+                    return true;
+				}
+				else{
+                    return false;
+				}
+			}
+        })
+    })
+</script>
+{%endblock header%}
+
+{%block body%}
+
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/user/">· 个人信息</a></li>
+				<li><a href="/user/order/">· 全部订单</a></li>
+				<li><a href="/user/site/" class="active">· 收货地址</a></li>
+			</ul>
+		</div>
+		<div class="right_content clearfix">
+				<h3 class="common_title2">收货地址</h3>
+				<div class="site_con">
+					<dl>
+						<dt>当前地址：</dt>
+                        {%for i in list%}
+						<dd>{{i.u_addr}}（{{i.u_recv_name}} 收） {{i.u_phone}}</dd>
+						{%endfor%}
+					</dl>
+				</div>
+				<h3 class="common_title2">编辑地址</h3>
+				<div class="site_con">
+					<form method="post" action="/user/handle_recv/" id="recv_form">
+                        {%csrf_token%}
+						<div class="form_group">
+							<label>收件人：</label>
+							<input type="text" name="recv_name">
+						</div>
+						<div class="form_group form_group2">
+							<label>详细地址：</label>
+							<textarea class="site_area" name="recv_addr"></textarea>
+						</div>
+						<div class="form_group">
+							<label>邮编：</label>
+							<input type="text" name="recv_zip">
+						</div>
+						<div class="form_group">
+							<label>手机：</label>
+							<input type="text" name="recv_phone">
+						</div>
+
+						<input type="submit" value="提交" class="info_submit">
+					</form>
+				</div>
+		</div>
+	</div>
+{%endblock body%}
